@@ -1,0 +1,21 @@
+{
+  "server": {
+    "group1": [
+      "http://localhost:28081"
+    ],
+    "group2": [
+      "http://192.168.101.104:8080",
+      "http://192.168.101.104:8081"
+    ]
+  },
+  "route": [
+    {
+      "source": "/service",
+      "target": "group1"
+    },
+    {
+      "source": "/group2",
+      "target": "group2"
+    }
+  ]
+}
