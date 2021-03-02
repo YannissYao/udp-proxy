@@ -38,14 +38,7 @@ public class CustomClientAsync extends Client implements DisposableBean, ClientA
 
     private EventLoopGroup clientGroup = new NioEventLoopGroup(new ThreadFactoryBuilder().setNameFormat("client work-%d").build());
     private final int cpuProcessors = Runtime.getRuntime().availableProcessors() * 2;
-    /**
-     * 空闲Channel缓存池
-     */
-    private ConcurrentHashMap<String, ArrayBlockingQueue<Channel>> freeChannels = new ConcurrentHashMap<>();
-    /**
-     * 繁忙Channel持有（繁忙池），起一个
-     */
-    private ConcurrentHashMap<String, ConcurrentHashMap<Integer, Channel>> busyChannels = new ConcurrentHashMap<>();
+
 
     @Value("${client.SO_REUSEADDR}")
     private boolean soReuseaddr;
@@ -105,6 +98,16 @@ public class CustomClientAsync extends Client implements DisposableBean, ClientA
      * @throws URISyntaxException exception
      * @throws InterruptedException exception
      */
+
+    /**
+     * 空闲Channel缓存池
+     */
+    private ConcurrentHashMap<String, ArrayBlockingQueue<Channel>> freeChannels = new ConcurrentHashMap<>();
+    /**
+     * 繁忙Channel持有（繁忙池），起一个
+     */
+    private ConcurrentHashMap<String, ConcurrentHashMap<Integer, Channel>> busyChannels = new ConcurrentHashMap<>();
+
     private Channel getChannel(FullHttpRequest request, int channelHashCode) throws URISyntaxException, InterruptedException {
         URI uri = new URI(request.uri());
 //        String key = uri.getHost() + "::" + uri.getPort();
@@ -152,7 +155,7 @@ public class CustomClientAsync extends Client implements DisposableBean, ClientA
         }
 
         String key = uri.getHost() + "::" + uri.getPort();
-        Channel channel = busyChannels.get(key).get(channelHashCode);
+        Channel channel = busyChannels.get(key).get(channelHashCode);//双get 获取到channel
 
         if (!freeChannels.containsKey(key)) {
             freeChannels.put(key, new ArrayBlockingQueue<>(cpuProcessors));

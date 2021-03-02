@@ -32,7 +32,7 @@ public class UdpServer implements ApplicationRunner, DisposableBean {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        ThreadFactory serverBoos = new ThreadFactoryBuilder().setNameFormat("server boos-%d").build();
+        ThreadFactory serverBoos = new ThreadFactoryBuilder().setNameFormat("server work-%d").build();
         bossGroup = new NioEventLoopGroup(3, serverBoos);
         Bootstrap b=new Bootstrap();
         b.group(bossGroup)
